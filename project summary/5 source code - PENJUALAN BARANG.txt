@@ -1,0 +1,228 @@
+Public dsa_col As String
+Public dsa_row As String
+Dim TEMP As Currency
+
+Private Sub CLD_Click()
+    TXT_TGL.Text = CLD.Value
+    CLD.Visible = False
+    FGRID.Rows = FGRID.Rows + 1
+    FGRID.SetFocus
+End Sub
+
+Private Sub CLD_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        CLD_Click
+    End If
+End Sub
+
+Private Sub CMD_INPUT_Click()
+    On Error Resume Next
+    If FGRID.TextMatrix(1, 1) <> "" Then
+'        TXT_ID.Text = "K-" & RS_KELUAR.RecordCount + 1
+        For i = 1 To (FGRID.Rows - 2)
+            RS_JUAL.AddNew
+            RS_JUAL(0) = "PJ-" & RS_JUAL.RecordCount + 1
+            RS_JUAL(1) = TXT_TGL.Text
+            RS_JUAL(2) = FGRID.TextMatrix(i, 1)
+            RS_JUAL(3) = FGRID.TextMatrix(i, 2)
+            RS_JUAL(4) = FGRID.TextMatrix(i, 3)
+            RS_JUAL(5) = FGRID.TextMatrix(i, 4)
+            RS_JUAL(6) = FGRID.TextMatrix(i, 5)
+'            =====================================
+'            UPDATE MASTER BRG
+'            =====================================
+            RS_MASTER_BRG.Sort = "KD_BRG"
+            RS_MASTER_BRG.MoveFirst
+            RS_MASTER_BRG.Find "KD_BRG='" & FGRID.TextMatrix(i, 1) & "'"
+'            HRG_BELI=RS_MASTER_BRG(3)
+'            JML_BAIK=RS_MASTER_BRG(5)
+'            JML_JUAL=FGRID.TextMatrix(i, 3)
+'            HRG_JUAL=FGRID.TextMatrix(i, 4)
+            If Left(RS_MASTER_BRG(0), 3) = "BRG" Then
+                RS_MASTER_BRG(5) = RS_MASTER_BRG(5) - FGRID.TextMatrix(i, 3)
+            End If
+'            RS_JUAL(6) = RS_MASTER_BRG(3)
+            RS_JUAL(7) = (RS_JUAL(5) - RS_JUAL(6)) * RS_JUAL(4)
+            RS_JUAL.UPDATE
+            RS_JUAL.Requery
+            Set DataGrid1.DataSource = RS_JUAL
+            RS_MASTER_BRG.UPDATE
+            RS_MASTER_BRG.Requery
+        Next
+        CMD_INPUT.Enabled = False
+        RS_JUAL.MoveLast
+        CMD_NEW.SetFocus
+    End If
+End Sub
+
+Private Sub CMD_INPUT_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        CMD_INPUT_Click
+    End If
+End Sub
+
+Private Sub CMD_NEW_Click()
+    FGRID.CLEAR
+    Form_Load
+    TXT_TGL.SetFocus
+End Sub
+
+Public Sub J_EDIT_FGRID()
+    TXT_CELL.Visible = True
+    TXT_CELL.Top = FGRID.CellTop + FGRID.Top
+    TXT_CELL.Left = FGRID.CellLeft + FGRID.Left
+
+    TXT_CELL.Text = FGRID.Text
+    TXT_CELL.SelStart = 0
+    TXT_CELL.SelLength = Len(TXT_CELL.Text)
+
+    TXT_CELL.Visible = True
+    TXT_CELL.Height = FGRID.CellHeight
+    TXT_CELL.Width = FGRID.CellWidth
+    TXT_CELL.SetFocus
+End Sub
+
+Private Sub FGRID_DblClick()
+    J_EDIT_FGRID
+End Sub
+
+Private Sub FGRID_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        FGRID_DblClick
+    ElseIf KeyAscii = 27 Then
+        CMD_INPUT.Enabled = True
+        CMD_INPUT.SetFocus
+    End If
+End Sub
+
+Private Sub Form_Load()
+    FGRID.TextMatrix(0, 1) = "KD BRG"
+    FGRID.TextMatrix(0, 2) = "NAMA BRG"
+    FGRID.TextMatrix(0, 3) = "JML JUAL"
+    FGRID.TextMatrix(0, 4) = "HRG JUAL"
+    FGRID.TextMatrix(0, 5) = "HRG BELI"
+    FGRID.TextMatrix(0, 6) = "JML HARGA"
+    FGRID.ColWidth(1) = 1000
+    FGRID.ColWidth(2) = 4000
+    FGRID.ColWidth(3) = 800
+    FGRID.ColWidth(4) = 1000
+    FGRID.ColWidth(5) = 1000
+    FGRID.ColWidth(6) = 1300
+    FGRID.Rows = 1
+    J_KONEKSI
+    TXT_TGL.Text = CLD.Value
+End Sub
+
+Public Sub J_KONEKSI()
+    '=============================================
+    'MEMBUKA KONEKSI DATABASE
+    '=============================================
+    If Module1.con.State = 1 Then con.Close
+    con.Open Module1.path_db
+    Module1.con.CursorLocation = adUseClient
+    
+    RS_JUAL.Open "select * from penjualan", con, adOpenKeyset, adLockOptimistic
+    RS_MASTER_BRG.Open "select * from MASTER_BRG_JASA", con, adOpenKeyset, adLockOptimistic
+    RS_MODAL.Open "select * from KEUANGAN", con, adOpenKeyset, adLockOptimistic
+    Set DataGrid1.DataSource = RS_JUAL
+    RS_JUAL.Sort = "TGL_JUAL"
+    RS_JUAL.MoveLast
+End Sub
+
+Private Sub TXT_CELL_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 27 Then
+        FGRID.SetFocus
+    ElseIf KeyAscii = 13 And FGRID.Col = 1 Then
+        STOK_VIEW.Show
+        dsa_col = FGRID.Col
+        dsa_row = FGRID.Row
+    ElseIf KeyAscii = 13 And FGRID.Col = 3 Then
+        If TXT_CELL.Text = "" Then
+            MsgBox "DATA TIDAK BOLEH KOSONG!"
+        ElseIf FGRID.TextMatrix(FGRID.Row, 4) = "" Then
+            FGRID.Col = 4
+            FGRID.TextMatrix(FGRID.Row, 3) = TXT_CELL.Text
+            J_EDIT_FGRID
+        Else
+            FGRID.TextMatrix(FGRID.Row, 3) = TXT_CELL.Text
+            If FGRID.TextMatrix(FGRID.Row, 6) = "" Then
+                FGRID.TextMatrix(FGRID.Row, 6) = 0
+            End If
+            TEMP = FGRID.TextMatrix(FGRID.Row, 6)
+            FGRID.TextMatrix(FGRID.Row, 6) = FGRID.TextMatrix(FGRID.Row, 3) * FGRID.TextMatrix(FGRID.Row, 4)
+            TXT_TOTAL.Text = FGRID.TextMatrix(FGRID.Row, 6) + Int(TXT_TOTAL.Text) - TEMP
+            If FGRID.Rows = (dsa_row + 1) Then
+                FGRID.Rows = FGRID.Rows + 1
+            End If
+            FGRID.Col = 1
+            FGRID.Row = FGRID.Row + 1
+            J_EDIT_FGRID
+        End If
+    ElseIf KeyAscii = 13 And FGRID.Col = 4 Then
+        If TXT_CELL = "" Then
+            MsgBox "DATA TIDAK BOLEH KOSONG!"
+        Else
+            FGRID.TextMatrix(FGRID.Row, 4) = TXT_CELL.Text
+            If FGRID.TextMatrix(FGRID.Row, 6) = "" Then
+                FGRID.TextMatrix(FGRID.Row, 6) = 0
+            End If
+            TEMP = FGRID.TextMatrix(FGRID.Row, 6)
+            FGRID.TextMatrix(FGRID.Row, 6) = FGRID.TextMatrix(FGRID.Row, 3) * FGRID.TextMatrix(FGRID.Row, 4)
+            TXT_TOTAL.Text = FGRID.TextMatrix(FGRID.Row, 6) + Int(TXT_TOTAL.Text) - TEMP
+            If FGRID.Rows = (dsa_row + 1) Then
+                FGRID.Rows = FGRID.Rows + 1
+            End If
+            FGRID.Col = 1
+            FGRID.Row = FGRID.Row + 1
+            J_EDIT_FGRID
+        End If
+    ElseIf KeyAscii = 13 And FGRID.Col = 5 Then
+        If TXT_CELL = "" Then
+            MsgBox "DATA TIDAK BOLEH KOSONG!"
+        Else
+            FGRID.TextMatrix(FGRID.Row, 5) = TXT_CELL.Text
+            If FGRID.TextMatrix(FGRID.Row, 6) = "" Then
+                FGRID.TextMatrix(FGRID.Row, 6) = 0
+            End If
+            TEMP = FGRID.TextMatrix(FGRID.Row, 6)
+            FGRID.TextMatrix(FGRID.Row, 6) = FGRID.TextMatrix(FGRID.Row, 3) * FGRID.TextMatrix(FGRID.Row, 4)
+            TXT_TOTAL.Text = FGRID.TextMatrix(FGRID.Row, 6) + Int(TXT_TOTAL.Text) - TEMP
+            If FGRID.Rows = (dsa_row + 1) Then
+                FGRID.Rows = FGRID.Rows + 1
+            End If
+            FGRID.Col = 1
+            FGRID.Row = FGRID.Row + 1
+            J_EDIT_FGRID
+        End If
+    
+    ElseIf KeyAscii = 13 And FGRID.Col = 6 Then
+        If TXT_CELL = "" Then
+            MsgBox "DATA TIDAK BOLEH KOSONG!"
+        Else
+            If FGRID.TextMatrix(FGRID.Row, 6) = "" Then
+                FGRID.TextMatrix(FGRID.Row, 6) = 0
+            End If
+            TEMP = FGRID.TextMatrix(FGRID.Row, 6)
+            FGRID.TextMatrix(FGRID.Row, 6) = TXT_CELL.Text
+            FGRID.TextMatrix(FGRID.Row, 4) = FGRID.TextMatrix(FGRID.Row, 6) / FGRID.TextMatrix(FGRID.Row, 3)
+            TXT_TOTAL.Text = FGRID.TextMatrix(FGRID.Row, 6) + Int(TXT_TOTAL.Text) - TEMP
+            If FGRID.Rows = (dsa_row + 1) Then
+                FGRID.Rows = FGRID.Rows + 1
+            End If
+            FGRID.Col = 1
+            FGRID.Row = FGRID.Row + 1
+            J_EDIT_FGRID
+        End If
+    End If
+End Sub
+
+Private Sub TXT_CELL_LostFocus()
+    TXT_CELL.Visible = False
+End Sub
+
+Private Sub TXT_TGL_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        CLD.Visible = True
+        CLD.SetFocus
+    End If
+End Sub

@@ -1,0 +1,43 @@
+Line 57: Class MSDataGridLib.DataGrid of control DataGrid1 was not a loaded control class.
+Line 122: Class MSACAL.Calendar of control CLD was not a loaded control class.
+Line 179: Class MSFlexGridLib.MSFlexGrid of control FGRID was not a loaded control class.
+Line 63: The property name _ExtentX in DataGrid1 is invalid.
+Line 64: The property name _ExtentY in DataGrid1 is invalid.
+Line 65: The property name _Version in DataGrid1 is invalid.
+Line 67: The property name HeadLines in DataGrid1 is invalid.
+Line 68: The property name RowHeight in DataGrid1 is invalid.
+Line 77: The property name HeadFont in DataGrid1 is invalid.
+Line 87: The property name ColumnCount in DataGrid1 is invalid.
+Line 100: The property name Column00 in DataGrid1 is invalid.
+Line 113: The property name Column01 in DataGrid1 is invalid.
+Line 114: The property name SplitCount in DataGrid1 is invalid.
+Line 120: The property name Split0 in DataGrid1 is invalid.
+Line 129: The property name _Version in CLD is invalid.
+Line 130: The property name _ExtentX in CLD is invalid.
+Line 131: The property name _ExtentY in CLD is invalid.
+Line 132: The property name _StockProps in CLD is invalid.
+Line 134: The property name Year in CLD is invalid.
+Line 135: The property name Month in CLD is invalid.
+Line 136: The property name Day in CLD is invalid.
+Line 137: The property name DayLength in CLD is invalid.
+Line 138: The property name MonthLength in CLD is invalid.
+Line 139: The property name DayFontColor in CLD is invalid.
+Line 140: The property name FirstDay in CLD is invalid.
+Line 141: The property name GridCellEffect in CLD is invalid.
+Line 142: The property name GridFontColor in CLD is invalid.
+Line 143: The property name GridLinesColor in CLD is invalid.
+Line 144: The property name ShowDateSelectors in CLD is invalid.
+Line 145: The property name ShowDays in CLD is invalid.
+Line 146: The property name ShowHorizontalGrid in CLD is invalid.
+Line 147: The property name ShowTitle in CLD is invalid.
+Line 148: The property name ShowVerticalGrid in CLD is invalid.
+Line 149: The property name TitleFontColor in CLD is invalid.
+Line 150: The property name ValueIsNull in CLD is invalid.
+Line 159: The property name DayFont in CLD is invalid.
+Line 168: The property name GridFont in CLD is invalid.
+Line 177: The property name TitleFont in CLD is invalid.
+Line 185: The property name _ExtentX in FGRID is invalid.
+Line 186: The property name _ExtentY in FGRID is invalid.
+Line 187: The property name _Version in FGRID is invalid.
+Line 188: The property name Rows in FGRID is invalid.
+Line 189: The property name Cols in FGRID is invalid.

@@ -1,0 +1,18 @@
+Private Sub Form_Load()
+    KONEKSI
+    RS_KELUAR.MoveFirst
+    TEMP = "K-" & RS_KELUAR.RecordCount + 1
+    RS_KELUAR.Find "ID_PENGELUARAN='" & TEMP & "'"
+    i = 1
+    While RS_KELUAR.EOF = False
+        i = i + 1
+        RS_KELUAR.MoveFirst
+        TEMP = "K-" & RS_KELUAR.RecordCount + i
+        RS_KELUAR.Find "ID_PENGELUARAN='" & TEMP & "'"
+    Wend
+    
+    TXT_ID.Text = "K-" & RS_KELUAR.RecordCount + i
+    RS_KELUAR.Sort = "TGL_PENGELUARAN"
+    RS_KELUAR.MoveLast
+    DISPLAY
+End Sub

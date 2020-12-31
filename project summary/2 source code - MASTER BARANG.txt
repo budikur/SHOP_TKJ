@@ -1,0 +1,145 @@
+
+Private Sub CMD_BARU_Click()
+    CMD_BARU.Enabled = False
+    CMD_UBAH.Enabled = False
+    CMD_SIMPAN.Enabled = True
+    CMD_HAPUS.Caption = "CANCEL"
+    Module1.CLEAR
+    
+    NAMA_BRG.Enabled = True
+    JNS_BRG.Enabled = True
+    HRG_BELI.Enabled = True
+    HRG_JUAL.Enabled = True
+    JML_BAIK.Enabled = True
+    JML_RUSAK.Enabled = True
+    NAMA_BRG.SetFocus
+    
+    KD_BRG.Text = "BRG-" & RS_MASTER_BRG.RecordCount + 1
+End Sub
+
+Private Sub CMD_HAPUS_Click()
+    If CMD_HAPUS.Caption = "CANCEL" Then
+        Module1.DEFAULT
+    Else
+        Module1.RS_MASTER_BRG(7) = "HAPUS"
+        Module1.RS_MASTER_BRG.UPDATE
+        Module1.RS_MASTER_BRG.Requery
+        Set MASTER_BRG.DataGrid1.DataSource = RS_MASTER_BRG
+    End If
+    Module1.DISPLAY
+End Sub
+
+Private Sub CMD_NEXT_Click()
+    Module1.RS_MASTER_BRG.MoveNext
+    Module1.DISPLAY
+End Sub
+
+Private Sub CMD_PREV_Click()
+    Module1.RS_MASTER_BRG.MovePrevious
+    Module1.DISPLAY
+End Sub
+
+Private Sub CMD_SIMPAN_Click()
+    Module1.SEARCHING
+    If CARI = True Then
+        YES_NO.Show
+    Else
+        Module1.NEW_RECORD
+        Module1.SORTING
+        Module1.DISPLAY
+        Module1.DEFAULT
+    End If
+'    CMD_BARU.SetFocus
+End Sub
+
+Private Sub CMD_UBAH_Click()
+    CMD_BARU.Enabled = False
+    CMD_UBAH.Enabled = False
+    CMD_SIMPAN.Enabled = True
+    CMD_HAPUS.Caption = "CANCEL"
+    
+    KD_BRG.Enabled = True
+    NAMA_BRG.Enabled = True
+    JNS_BRG.Enabled = True
+    HRG_BELI.Enabled = True
+    HRG_JUAL.Enabled = True
+    JML_BAIK.Enabled = True
+    JML_RUSAK.Enabled = True
+    KD_BRG.SetFocus
+End Sub
+
+Private Sub DataGrid1_Click()
+    Module1.DISPLAY
+End Sub
+
+Private Sub Form_Load()
+    '=============================================
+    'MEMBUKA KONEKSI DATABASE
+    '=============================================
+    If Module1.con.State = 1 Then con.Close
+    con.Open Module1.path_db
+    Module1.con.CursorLocation = adUseClient
+    '=============================================
+    'MENYIMPAN SELURUH RECORD DI VARIABEL RS_MASTER_BRG
+    '=============================================
+    RS_MASTER_BRG.Open "select * from master_brg_jasa", con, adOpenKeyset, adLockOptimistic
+    Set DataGrid1.DataSource = RS_MASTER_BRG
+    
+    Module1.DEFAULT
+    Module1.SORTING
+    Module1.DISPLAY
+End Sub
+
+Private Sub HRG_BELI_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        HRG_JUAL.SetFocus
+    End If
+End Sub
+
+Private Sub HRG_JUAL_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        JML_BAIK.SetFocus
+    End If
+End Sub
+
+Private Sub JML_BAIK_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        JML_RUSAK.SetFocus
+    End If
+End Sub
+
+Private Sub JML_RUSAK_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        CMD_SIMPAN.SetFocus
+    End If
+End Sub
+
+Private Sub JNS_BRG_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        HRG_BELI.SetFocus
+    End If
+End Sub
+
+Private Sub KD_BRG_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        NAMA_BRG.SetFocus
+    End If
+    CMD_SIMPAN.Enabled = True
+End Sub
+
+Private Sub NAMA_BRG_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        JNS_BRG.SetFocus
+    End If
+End Sub
+
+Private Sub Text1_Change()
+'    RS_STOK.Filter = Combo1.Text & "='" & Text1.Text & "'"
+'    rsFilter.Filter = "Kode = 'AAA'"
+'    Adodc1.RecordSource = "select * from data where nama like'%" & Text1.Text & "%'"
+    RS_MASTER_BRG.Close
+    RS_MASTER_BRG.Open "select * from MASTER_BRG_JASA where NAMA_BRG like'%" & Text1.Text & "%'", con, adOpenKeyset, adLockOptimistic
+    RS_MASTER_BRG.Requery
+    Set DataGrid1.DataSource = RS_MASTER_BRG
+End Sub
+

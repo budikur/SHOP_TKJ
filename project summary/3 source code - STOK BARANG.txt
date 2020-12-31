@@ -1,0 +1,33 @@
+Dim ASD As String
+
+Private Sub Combo2_Click()
+    RS_STOK.Sort = Combo2.Text
+End Sub
+
+Private Sub Form_Load()
+    '=============================================
+    'MEMBUKA KONEKSI DATABASE
+    '=============================================
+    If Module1.con.State = 1 Then con.Close
+    con.Open Module1.path_db
+    Module1.con.CursorLocation = adUseClient
+    
+    RS_STOK.Open "select KD_BRG,NAMA_BRG,JENIS_BRG,JML_BAIK,JML_RUSAK from MASTER_BRG_JASA WHERE HAPUS='EXIST'", con, adOpenKeyset, adLockOptimistic
+    Set DataGrid1.DataSource = RS_STOK
+    RS_STOK.Sort = "NAMA_BRG"
+    DataGrid1.Columns(1).Width = 3000
+    DataGrid1.Columns(3).Width = 1000
+    DataGrid1.Columns(4).Width = 1000
+    DataGrid1.Columns(3).Alignment = dbgRight
+    DataGrid1.Columns(4).Alignment = dbgRight
+End Sub
+
+Private Sub Text1_Change()
+'    RS_STOK.Filter = Combo1.Text & "='" & Text1.Text & "'"
+'    rsFilter.Filter = "Kode = 'AAA'"
+'    Adodc1.RecordSource = "select * from data where nama like'%" & Text1.Text & "%'"
+    RS_STOK.Close
+    RS_STOK.Open "select KD_BRG,NAMA_BRG,JENIS_BRG,JML_BAIK,JML_RUSAK from MASTER_BRG_JASA where " & Combo1.Text & " like'%" & Text1.Text & "%'", con, adOpenKeyset, adLockOptimistic
+    RS_STOK.Requery
+    Set DataGrid1.DataSource = RS_STOK
+End Sub

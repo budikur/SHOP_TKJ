@@ -1,0 +1,124 @@
+
+Private Sub DISPLAY()
+    DataGrid1.Columns(0).Width = 700
+    DataGrid1.Columns(2).Width = 5000
+    DataGrid1.Columns(3).Width = 2000
+    DataGrid1.Columns(3).Alignment = dbgRight
+End Sub
+
+Private Sub Combo1_GotFocus()
+    TXT_RUSAK.Visible = False
+    TXT_JENIS.Visible = False
+    TXT_NILAI.Visible = False
+End Sub
+
+Private Sub Combo1_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        If Combo1.Text = "NON BARANG" Then
+            TXT_RUSAK.Visible = False
+            TXT_JENIS.Visible = True
+            TXT_NILAI.Visible = True
+            TXT_JENIS.SetFocus
+        ElseIf Combo1.Text = "BARANG" Then
+            TXT_RUSAK.Visible = True
+            TXT_RUSAK.SetFocus
+            TXT_JENIS.Visible = False
+            TXT_NILAI.Visible = False
+        Else
+            TXT_RUSAK.Visible = False
+            TXT_JENIS.Visible = False
+            TXT_NILAI.Visible = False
+            Combo1.SetFocus
+        End If
+    End If
+End Sub
+
+'Private Sub Form_Load()
+'    KONEKSI
+'    TXT_ID.Text = "K-" & RS_KELUAR.RecordCount + 1
+'    RS_KELUAR.Sort = "TGL_PENGELUARAN"
+'    RS_KELUAR.MoveLast
+'    DISPLAY
+'End Sub
+Private Sub Form_Load()
+    KONEKSI
+    RS_KELUAR.MoveFirst
+    TEMP = "K-" & RS_KELUAR.RecordCount + 1
+    RS_KELUAR.Find "ID_PENGELUARAN='" & TEMP & "'"
+    i = 1
+    While RS_KELUAR.EOF = False
+        i = i + 1
+        RS_KELUAR.MoveFirst
+        TEMP = "K-" & RS_KELUAR.RecordCount + i
+        RS_KELUAR.Find "ID_PENGELUARAN='" & TEMP & "'"
+    Wend
+    
+    TXT_ID.Text = "K-" & RS_KELUAR.RecordCount + i
+    RS_KELUAR.Sort = "TGL_PENGELUARAN"
+    RS_KELUAR.MoveLast
+    DISPLAY
+End Sub
+
+Public Sub KONEKSI()
+    '=============================================
+    'MEMBUKA KONEKSI DATABASE
+    '=============================================
+    If Module1.con.State = 1 Then con.Close
+    con.Open Module1.path_db
+    Module1.con.CursorLocation = adUseClient
+    
+    RS_KELUAR.Open "select * from pengeluaran", con, adOpenKeyset, adLockOptimistic
+    RS_MASTER_BRG.Open "select * from MASTER_BRG_JASA", con, adOpenKeyset, adLockOptimistic
+    Set DataGrid1.DataSource = RS_KELUAR
+End Sub
+
+Private Sub TXT_JENIS_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        TXT_NILAI.SetFocus
+    End If
+End Sub
+
+Private Sub TXT_NILAI_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        RS_KELUAR.AddNew
+        RS_KELUAR(0) = TXT_ID.Text
+        RS_KELUAR(1) = DTPicker1.Value
+        
+        If TXT_RUSAK.Visible = True Then
+            RS_KELUAR(2) = TXT_RUSAK.Text
+            RS_KELUAR(4) = TXT_JENIS.Text
+            '=====================================
+            'UPDATE MASTER BRG
+            '=====================================
+            RS_MASTER_BRG.Sort = "KD_BRG"
+            RS_MASTER_BRG.MoveFirst
+            RS_MASTER_BRG.Find "KD_BRG='" & KD_BRG & "'"
+            RS_MASTER_BRG(5) = RS_MASTER_BRG(5) - 1
+            RS_MASTER_BRG.UPDATE
+            RS_MASTER_BRG.Requery
+        Else
+            RS_KELUAR(2) = TXT_JENIS.Text
+        End If
+      
+        RS_KELUAR(3) = TXT_NILAI.Text
+        RS_KELUAR.UPDATE
+        RS_KELUAR.Requery
+        RS_KELUAR.Sort = "TGL_PENGELUARAN"
+        RS_KELUAR.MoveLast
+        Set DataGrid1.DataSource = RS_KELUAR
+        
+        TXT_ID.Text = "K-" & RS_KELUAR.RecordCount + 1
+        TXT_RUSAK.Text = ""
+        TXT_JENIS.Text = ""
+        TXT_NILAI.Text = ""
+        DTPicker1.SetFocus
+        DISPLAY
+    End If
+End Sub
+
+Private Sub TXT_RUSAK_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        STOK_VIEW_2.Show
+    End If
+End Sub
+

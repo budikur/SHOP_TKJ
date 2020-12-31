@@ -1,0 +1,36 @@
+
+Private Sub Dir1_Change()
+    File1.FileName = Dir1.Path
+    Text1.Text = Dir1.Path
+End Sub
+
+Private Sub Dir1_KeyPress(KeyAscii As Integer)
+    If KeyAscii = 13 Then
+        Dir1_Change
+    End If
+End Sub
+
+Private Sub Drive1_Change()
+    Dir1.Path = Drive1.Drive
+    Text1.Text = Dir1.Path
+End Sub
+
+Private Sub File1_Click()
+    Text1.Text = File1.Path & "\" & File1.FileName
+End Sub
+
+Private Sub File1_DblClick()
+    Text1.Text = File1.Path & "\" & File1.FileName
+    Module1.path_db = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & Text1.Text
+    
+    Open App.Path & "\PATH_MDB.txt" For Output As #1
+    Print #1, Module1.path_db
+    Close #1
+    MAIN_MENU.Label1 = Module1.path_db
+    Me.Hide
+    MAIN_MENU.Show
+End Sub
+
+Private Sub Form_Load()
+    Text1.Text = Dir1.Path
+End Sub
